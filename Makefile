@@ -28,9 +28,6 @@ dind: stop-dind ## Starts a docker-in-docker container for running the tests wit
 		--userns-remap default \
 		--log-driver=none \
 		--exec-opt=native.cgroupdriver=cgroupfs \
-		--ip-forward=false \
-		--ip-masq=false \
-		--icc=false \
 		--tlsverify \
 		--tlscacert=/etc/docker/ssl/cacert.pem \
 		--tlskey=/etc/docker/ssl/server.key \

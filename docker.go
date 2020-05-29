@@ -11,7 +11,6 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/strslice"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/docker/docker/pkg/term"
@@ -29,9 +28,6 @@ func (h *handler) startContainer() (string, *websocket.Conn, error) {
 	if err := json.Compact(b, []byte(seccompProfile)); err != nil {
 		return "", nil, fmt.Errorf("compacting json for seccomp profile failed: %v", err)
 	}
-	securityOpts = append(securityOpts, fmt.Sprintf("seccomp=%s", b.Bytes()))
-
-	dropCaps := &strslice.StrSlice{"NET_RAW"}
 
 	// create the container
 	r, err := h.dcli.ContainerCreate(
@@ -48,13 +44,12 @@ func (h *handler) startContainer() (string, *websocket.Conn, error) {
 		},
 		&container.HostConfig{
 			SecurityOpt: securityOpts,
-			CapDrop:     *dropCaps,
-			NetworkMode: "none",
+			NetworkMode: "default",
 			LogConfig: container.LogConfig{
 				Type: "none",
 			},
 			Resources: container.Resources{
-				PidsLimit: 5,
+				PidsLimit: 25,
 			},
 		},
 		nil, "")
